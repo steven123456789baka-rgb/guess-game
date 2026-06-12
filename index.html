@@ -1,32 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>灰灰猜数字游戏</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>灰灰躲方块</title>
+<style>
+body {
+    margin: 0;
+    background: #111;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+h1 { margin: 15px 0 5px; }
+#game {
+    width: 360px;
+    height: 520px;
+    background: linear-gradient(#222, #333);
+    margin: 10px auto;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid white;
+    border-radius: 12px;
+}
+#player {
+    width: 50px;
+    height: 50px;
+    background: #4caf50;
+    position: absolute;
+    bottom: 20px;
+    left: 155px;
+    border-radius: 10px;
+}
+.enemy {
+    width: 45px;
+    height: 45px;
+    background: #ff4444;
+    position: absolute;
+    top: -50px;
+    border-radius: 8px;
+}
+#score {
+    font-size: 22px;
+}
+#buttons button {
+    font-size: 24px;
+    padding: 12px 35px;
+    margin: 8px;
+    border: none;
+    border-radius: 12px;
+}
+#restart {
+    display: none;
+    margin-top: 10px;
+    padding: 12px 30px;
+    font-size: 20px;
+    border-radius: 10px;
+}
+</style>
 </head>
 <body>
-    <h2>🎮 灰灰猜数字游戏</h2>
-    <p>我想了一个 1 到 10 的数字，你猜猜是多少：</p>
 
-    <input id="guess" type="number">
-    <button onclick="check()">猜！</button>
+<h1>🎮 灰灰躲方块</h1>
+<div id="score">分数：0</div>
 
-    <p id="result"></p>
+<div id="game">
+    <div id="player"></div>
+</div>
 
-    <script>
-        let answer = Math.floor(Math.random() * 10) + 1;
+<div id="buttons">
+    <button onclick="moveLeft()">⬅️</button>
+    <button onclick="moveRight()">➡️</button>
+</div>
 
-        function check() {
-            let guess = Number(document.getElementById("guess").value);
+<button id="restart" onclick="location.reload()">重新开始</button>
 
-            if (guess === answer) {
-                document.getElementById("result").innerText = "🎉 猜对了！灰灰牛逼！";
-            } else if (guess > answer) {
-                document.getElementById("result").innerText = "太大了！";
-            } else {
-                document.getElementById("result").innerText = "太小了！";
-            }
+<script>
+const game = document.getElementById("game");
+const player = document.getElementById("player");
+const scoreText = document.getElementById("score");
+const restartBtn = document.getElementById("restart");
+
+let playerX = 155;
+let score = 0;
+let gameOver = false;
+let speed = 3;
+
+function moveLeft() {
+    if (playerX > 0) {
+        playerX -= 30;
+        player.style.left = playerX + "px";
+    }
+}
+
+function moveRight() {
+    if (playerX < 310) {
+        playerX += 30;
+        player.style.left = playerX + "px";
+    }
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "ArrowLeft") moveLeft();
+    if (e.key === "ArrowRight") moveRight();
+});
+
+function createEnemy() {
+    if (gameOver) return;
+
+    const enemy = document.createElement("div");
+    enemy.className = "enemy";
+    enemy.style.left = Math.floor(Math.random() * 315) + "px";
+    game.appendChild(enemy);
+
+    let enemyY = -50;
+
+    const fall = setInterval(() => {
+        if (gameOver) {
+            clearInterval(fall);
+            return;
         }
-    </script>
+
+        enemyY += speed;
+        enemy.style.top = enemyY + "px";
+
+        const enemyX = parseInt(enemy.style.left);
+
+        if (
+            enemyY > 420 &&
+            enemyY < 500 &&
+            enemyX < playerX + 50 &&
+            enemyX + 45 > playerX
+        ) {
+            endGame();
+            clearInterval(fall);
+        }
+
+        if (enemyY > 530) {
+            enemy.remove();
+            score++;
+            scoreText.innerText = "分数：" + score;
+
+            if (score % 5 === 0) {
+                speed += 0.5;
+            }
+
+            clearInterval(fall);
+        }
+    }, 20);
+}
+
+function endGame() {
+    gameOver = true;
+    scoreText.innerText = "游戏结束！最终分数：" + score;
+    restartBtn.style.display = "inline-block";
+}
+
+setInterval(createEnemy, 900);
+</script>
+
 </body>
 </html>
