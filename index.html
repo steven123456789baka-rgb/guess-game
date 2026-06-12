@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>灰灰躲方块</title>
 <style>
 body {
@@ -11,6 +11,7 @@ body {
     color: white;
     font-family: Arial, sans-serif;
     text-align: center;
+    touch-action: manipulation;
 }
 h1 { margin: 15px 0 5px; }
 #game {
@@ -76,6 +77,17 @@ h1 { margin: 15px 0 5px; }
 <button id="restart" onclick="location.reload()">重新开始</button>
 
 <script>
+let lastTouchEnd = 0;
+
+document.addEventListener('touchend', function (event) {
+    let now = (new Date()).getTime();
+
+    if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+    }
+
+    lastTouchEnd = now;
+}, false);
 const game = document.getElementById("game");
 const player = document.getElementById("player");
 const scoreText = document.getElementById("score");
