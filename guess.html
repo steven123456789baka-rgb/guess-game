@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>灰灰猜数字游戏</title>
+</head>
+<body>
+    <h2>🎮 灰灰猜数字游戏</h2>
+    <p>我想了一个 1 到 10 的数字，你猜猜是多少：</p>
+
+    <input id="guess" type="number">
+    <button onclick="check()">猜！</button>
+
+    <p id="result"></p>
+
+    <script>
+        let answer = Math.floor(Math.random() * 10) + 1;
+
+        function check() {
+            let guess = Number(document.getElementById("guess").value);
+
+            if (guess === answer) {
+                document.getElementById("result").innerText = "🎉 猜对了！灰灰牛逼！";
+            } else if (guess > answer) {
+                document.getElementById("result").innerText = "太大了！";
+            } else {
+                document.getElementById("result").innerText = "太小了！";
+            }
+        }
+    </script>
+</body>
+</html>
